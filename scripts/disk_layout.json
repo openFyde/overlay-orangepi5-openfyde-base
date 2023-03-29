@@ -28,9 +28,9 @@
         # uboot of orangepi seems not support ext4 well
         # It causes boot failure after OTA:
         # "fs_devread read outside partition 6700108881503686656"
-        "fs_format": "ext2",
+        "fs_format": "ext4",
         "fs_options": {
-          "ext2": "-O ^64bit,^metadata_csum"
+          "ext4": "-O ^64bit,^metadata_csum"
         },
         # caculate: size = fs_size / 64  + 200 (M)
         # There are two reasons for 200M size:
