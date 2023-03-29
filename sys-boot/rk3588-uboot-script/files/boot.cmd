@@ -14,8 +14,8 @@ setenv rootdev "/dev/mmcblk0p1"
 setenv verbosity "1"
 setenv console "both"
 setenv bootlogo "false"
-setenv rootfstype "ext2"
-setenv docker_optimizations "on"
+setenv rootfstype "ext4"
+setenv docker_optimizations "off"
 setenv earlycon "on"
 
 if test -e ${devtype} ${devnum}:${distro_bootpart} /boot/first-b.txt; then
@@ -44,9 +44,8 @@ if test "${devtype}" = "mmc"; then part uuid mmc ${devnum}:${rootpart} partuuid;
 
 setenv bootargs rootwait ro cros_debug cros_secure cros_legacy console=ttyS2,1500000n8 root=PARTUUID=${root_uuid} cma=64M usbstoragequirks=0x2537:0x1066:u,0x2537:0x1068:u
 
-#if test "${docker_optimizations}" = "on"; then setenv bootargs "${bootargs} cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory swapaccount=1"; fi
+setenv rootpart ${distro_bootpart}
 
-#load ${devtype} ${devnum} ${ramdisk_addr_r} ${prefix}uInitrd
 load ${devtype} ${devnum}:${rootpart} ${kernel_addr_r} ${prefix}Image
 
 load ${devtype} ${devnum}:${rootpart} ${fdt_addr_r} ${prefix}/rockchip/${fdtfile}

@@ -41,7 +41,7 @@ index 9fbae9c195b8..ea116a9b2f39 100755
  main() {
    cd "${INSTALL_ROOT}" || exit 1
  
-@@ -41,6 +73,14 @@ main() {
+@@ -41,6 +73,15 @@ main() {
    done
  
    local install_dev="$1"
@@ -52,6 +52,7 @@ index 9fbae9c195b8..ea116a9b2f39 100755
 +  fi
 +
 +  chroot . /usr/sbin/flash_spi.sh "$(get_mtd_dev)" "$(get_boot_type)"
++  chroot . /usr/sbin/copy_kernel.sh "$target_disk"
 +
    shift
    chroot . /usr/bin/cros_installer --type="postinst" \
