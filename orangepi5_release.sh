@@ -93,8 +93,8 @@ done
 
 cwd="$(pwd)"
 
-if [ -z "$target" ]; then
-   arget="$(echo "$0" | sed s/.run/.img/g)"
+if [ -z "$target" ] && [ "$inplace" != "true"] && [ "$src" != "true" ]; then
+   target="$(echo "$0" | sed s/.run/.img/g)"
    echo "$target" | grep -q '.img' || target="${target}.img"
 fi
 
