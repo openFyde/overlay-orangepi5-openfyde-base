@@ -93,7 +93,7 @@ done
 
 cwd="$(pwd)"
 
-if [ -z "$target" ] && [ "$inplace" != "true"] && [ "$src" != "true" ]; then
+if [ -z "$target" ] && [ "$inplace" != "true" ] && [ -z "$src" ]; then
    target="$(echo "$0" | sed s/.run/.img/g)"
    echo "$target" | grep -q '.img' || target="${target}.img"
 fi
