@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-shell_lines=102         # Adjust it if the script changes
+shell_lines=131         # Adjust it if the script changes
 version_string=r102-r1
 targetdir=orangepi5-openfyde
 TMPROOT=${TMPDIR:=./}
@@ -12,6 +12,9 @@ SECTOR_SIZE=512
 # Write magic to the last sector of RESERVED partition of ChromiumOS
 MAGIC_SECTOR=65598
 self=$(realpath $0)
+skip="false"
+inplace="false"
+src=""
 
 usage()
 {
@@ -21,8 +24,14 @@ usage()
     echo "options:"
     echo "  '--help/-h'"
     echo "      This message"
+    echo "  '--src/-i [src]'"
+    echo "      path of src image"
     echo "  '--target/-o [target]'"
-    echo "      path target image"
+    echo "      path of target image"
+    echo "  '--skip/-s"
+    echo "      src image is plain, skip uncompression"
+    echo "  '--inplace/-p"
+    echo "      do not copy src to target, modify it inplace"
     echo "  '--boot sata'"
     echo "      generates images supporting boot from SATA"
     echo "  '--boot nvme'"
@@ -41,13 +50,27 @@ while [ "$1" ]; do
        "--help"|"-h")
            usage;
            ;;
-       "--target")
+       "--src"|"-i")
+           if [ "$2" ]; then
+               src="$2"
+               shift;
+           else
+               err "ERROR: --src: no src specified."
+           fi
+           ;;
+       "--target"|"-o")
            if [ "$2" ]; then
                target="$2"
                shift;
            else
                err "ERROR: --target: no target specified."
            fi
+           ;;
+       "--skip"|"-s")
+           skip="true"
+           ;;
+       "--inplace"|"-p")
+           inplace="true"
            ;;
        "--boot")
            if [ "$2" == "nvme" -o "$2" == "NVME" ]; then
@@ -69,24 +92,30 @@ done
 
 
 cwd="$(pwd)"
-temp="${TMPDIR}/openfyde.XXXXXXXXXXXXXX"
 
-[ -z "$target" ] && target="$(echo "$0" | sed s/.run/.img/g)"
-echo "$target" | grep -q '.img' || target="${target}.img"
+if [ -z "$target" ]; then
+   arget="$(echo "$0" | sed s/.run/.img/g)"
+   echo "$target" | grep -q '.img' || target="${target}.img"
+fi
 
 [ -f "$target" ] && err "$target already exists, please remove it first"
 [ -d "$target" ] && berr "$target already exists, please remove it first"
 
-
-mkdir -p "$temp"
-
 command -v "unxz" > /dev/null 2>&1 || err "command unxz is not found"
 
-cat $self | tail -n +${shell_lines} | unxz > $target
+if [ "$skip" == "false" ]; then
+    cat $self | tail -n +${shell_lines} | unxz > $target
 
-if [ "$?" -ne 0 ]; then
-   rm "$target"
-   err "failed to unxz image"
+    if [ "$?" -ne 0 ]; then
+        rm "$target"
+        err "failed to unxz image"
+    fi
+else
+    if [ "$inplace" == "false" ]; then
+        cp $src $target || err "failed to cp $src $target"
+    else
+        target="$src"
+    fi
 fi
 
 
