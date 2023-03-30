@@ -22,14 +22,22 @@ if test -e ${devtype} ${devnum}:${distro_bootpart} /boot/first-b.txt; then
   setenv rootpart 5
 fi
 
-echo "Boot script loaded from ${devtype} ${devnum}:${rootpart}"
-echo "distro_bootpart: ${distro_bootpart}"
+echo "Boot script loaded from ${devtype} ${devnum}:${distro_bootpart}"
 
 part uuid ${devtype} ${devnum}:${rootpart} root_uuid
 
+# here we load ${efi}/boot/Env.txt first, then /fyde/Env.txt can override envs
+if test -e ${devtype} ${devnum}:${distro_bootpart} ${prefix}Env.txt; then
+	load ${devtype} ${devnum}:${distro_bootpart} ${load_addr} ${prefix}/Env.txt
+	env import -t ${load_addr} ${filesize}
+	echo "loaded envs from  ${devtype} ${devnum}:${distro_bootpart} ${prefix}Env.txt"
+fi
+
+# NOTE: stateful ext4 partition reads may fail due to BAD uboot
 if test -e ${devtype} ${devnum}:1 /fyde/Env.txt; then
 	load ${devtype} ${devnum}:1 ${load_addr} /fyde/Env.txt
 	env import -t ${load_addr} ${filesize}
+	echo "loaded envs from  ${devtype} ${devnum}:1 /fyde/Env.txt"
 fi
 
 if test "${logo}" = "disabled"; then setenv logo "logo.nologo"; fi
@@ -42,6 +50,7 @@ if test "${bootlogo}" = "true"; then setenv consoleargs "bootsplash.bootfile=boo
 # get PARTUUID of first partition on SD/eMMC the boot script was loaded from
 if test "${devtype}" = "mmc"; then part uuid mmc ${devnum}:${rootpart} partuuid; fi
 
+echo "rootpart: ${devtype} ${devnum}:${rootpart} uuid:${root_uuid}"
 setenv bootargs rootwait ro cros_debug cros_secure cros_legacy console=ttyS2,1500000n8 root=PARTUUID=${root_uuid} cma=64M usbstoragequirks=0x2537:0x1066:u,0x2537:0x1068:u
 
 setenv rootpart ${distro_bootpart}
