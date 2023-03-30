@@ -23,6 +23,8 @@ remove_old_kernel() {
 copy_kernel_to() {
   local efi_mnt=$1
 
+  [ -f /mnt/stateful_partition/fyde/Env.txt ] && \
+      cp /mnt/stateful_partition/fyde/Env.txt "${efi_mnt}/boot/"
   cp /boot/Image "${efi_mnt}/boot/Image"
   cp -r /boot/rockchip "${efi_mnt}/boot/"
 }

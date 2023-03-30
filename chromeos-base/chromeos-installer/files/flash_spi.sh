@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 LOADER_DIR=/usr/share/orangepi5
 
@@ -7,7 +7,7 @@ main() {
  local type="$2"
  local loader=""
 
- if [ "$type" = 'SATA' ]; then
+ if [ "$type" == "SATA" ]; then
     loader="${LOADER_DIR}/rkspi_loader_sata.img"
  else
     loader="${LOADER_DIR}/rkspi_loader.img"
