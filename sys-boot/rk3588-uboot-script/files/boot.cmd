@@ -8,7 +8,7 @@ setenv rootpart 3
 setenv load_addr "0x9000000"
 setenv overlay_error "false"
 
-setenv overlay_prefix rk3588
+# setenv overlay_prefix rk3588
 # default values
 setenv rootdev "/dev/mmcblk0p1"
 setenv verbosity "1"
@@ -61,8 +61,8 @@ load ${devtype} ${devnum}:${rootpart} ${fdt_addr_r} ${prefix}/rockchip/${fdtfile
 fdt addr ${fdt_addr_r}
 fdt resize 65536
 for overlay_file in ${overlays}; do
-	if load ${devtype} ${devnum}:${rootpart} ${load_addr} ${prefix}/rockchip/overlay/${overlay_prefix}-${overlay_file}.dtbo; then
-		echo "Applying kernel provided DT overlay ${overlay_prefix}-${overlay_file}.dtbo"
+	if load ${devtype} ${devnum}:${rootpart} ${load_addr} ${prefix}/rockchip/overlay/${overlay_prefix}${overlay_file}.dtbo; then
+		echo "Applying kernel provided DT overlay ${overlay_prefix}${overlay_file}.dtbo"
 		fdt apply ${load_addr} || setenv overlay_error "true"
 	fi
 done
@@ -78,8 +78,8 @@ if test "${overlay_error}" = "true"; then
 	echo "Error applying DT overlays, restoring original DT"
 	load ${devtype} ${devnum}:${rootpart} ${fdt_addr_r} ${prefix}/rockchip/${fdtfile}
 else
-	if load ${devtype} ${devnum}:${rootpart} ${load_addr} ${prefix}/rockchip/overlay/${overlay_prefix}-fixup.scr; then
-		echo "Applying kernel provided DT fixup script (${overlay_prefix}-fixup.scr)"
+	if load ${devtype} ${devnum}:${rootpart} ${load_addr} ${prefix}/rockchip/overlay/${overlay_prefix}fixup.scr; then
+		echo "Applying kernel provided DT fixup script (${overlay_prefix}fixup.scr)"
 		source ${load_addr}
 	fi
 	if test -e ${devtype} ${devnum}:${rootpart} ${prefix}fixup.scr; then
