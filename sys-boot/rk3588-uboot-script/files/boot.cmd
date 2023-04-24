@@ -2,7 +2,7 @@
 # mkimage -C none -A arm -T script -d /boot/boot.cmd /boot/boot.scr
 
 
-setenv fdtfile rk3588s-orangepi-5.dtb
+setenv fdtfile #ROCKCHIP_DTS#.dtb
 setenv rootpart 3
 
 setenv load_addr "0x9000000"
