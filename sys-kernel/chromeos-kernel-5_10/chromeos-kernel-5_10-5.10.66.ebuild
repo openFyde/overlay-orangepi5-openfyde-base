@@ -5,7 +5,7 @@ EAPI=7
 # CROS_WORKON_REPO is internal git url example: http://git.xxxx/repo
 CROS_WORKON_REPO="git@github.com:orangepi-xunlong"
 # CROS_WORKON_COMMIT is internel kernel commit
-CROS_WORKON_COMMIT="88961a71100e64a97124a674eff8b71863d4cbbc"
+CROS_WORKON_COMMIT="0d1781e72fb7707a0bbc4419c8f1bc75a113f19a"
 
 CROS_WORKON_PROJECT="linux-orangepi"
 # clone the kernel resource to ~/trunk/src/third_party/kernel/v5.10-rockchip to speed up the compiling.
@@ -13,7 +13,7 @@ CROS_WORKON_LOCALNAME="kernel/v5.10-rockchip"
 CROS_WORKON_EGIT_BRANCH="orange-pi-5.10-rk3588"
 CROS_WORKON_INCREMENTAL_BUILD="1"
 CROS_WORKON_MANUAL_UPREV=1
-#ECLASS_DEBUG_OUTPUT="on"
+ECLASS_DEBUG_OUTPUT="on"
 EGIT_MASTER="orange-pi-5.10-rk3588"
 
 # This must be inherited *after* EGIT/CROS_WORKON variables defined
