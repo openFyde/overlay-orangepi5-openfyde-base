@@ -17,6 +17,8 @@ setenv bootlogo "false"
 setenv rootfstype "ext4"
 setenv docker_optimizations "off"
 setenv earlycon "on"
+setenv user_overlay "/fyde/overlay"
+setenv stateful_part "1"
 
 if test -e ${devtype} ${devnum}:${distro_bootpart} /boot/first-b.txt; then
   setenv rootpart 5
@@ -34,8 +36,8 @@ if test -e ${devtype} ${devnum}:${distro_bootpart} ${prefix}Env.txt; then
 fi
 
 # NOTE: stateful ext4 partition reads may fail due to BAD uboot
-if test -e ${devtype} ${devnum}:1 /fyde/Env.txt; then
-	load ${devtype} ${devnum}:1 ${load_addr} /fyde/Env.txt
+if test -e ${devtype} ${devnum}:${stateful_part} /fyde/Env.txt; then
+	load ${devtype} ${devnum}:${stateful_part} ${load_addr} /fyde/Env.txt
 	env import -t ${load_addr} ${filesize}
 	echo "loaded envs from  ${devtype} ${devnum}:1 /fyde/Env.txt"
 fi
@@ -67,12 +69,12 @@ for overlay_file in ${overlays}; do
 	fi
 done
 
-#for overlay_file in ${user_overlays}; do
-#	if load ${devtype} ${devnum}:${rootpart} ${load_addr} ${prefix}overlay-user/${overlay_file}.dtbo; then
-#		echo "Applying user provided DT overlay ${overlay_file}.dtbo"
-#		fdt apply ${load_addr} || setenv overlay_error "true"
-#	fi
-#done
+for overlay_file in ${user_overlays}; do
+	if load ${devtype} ${devnum}:${stateful_part} ${load_addr} ${user_overlay}/${overlay_file}.dtbo; then
+		echo "Applying user provided DT overlay ${overlay_file}.dtbo"
+		fdt apply ${load_addr} || setenv overlay_error "true"
+	fi
+done
 
 if test "${overlay_error}" = "true"; then
 	echo "Error applying DT overlays, restoring original DT"
