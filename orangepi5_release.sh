@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-shell_lines=131         # Adjust it if the script changes
+shell_lines=132         # Adjust it if the script changes
 version_string=r102-r1
 targetdir=orangepi5-openfyde
 TMPROOT=${TMPDIR:=./}
@@ -98,8 +98,8 @@ if [ -z "$target" ] && [ "$inplace" != "true" ] && [ -z "$src" ]; then
    echo "$target" | grep -q '.img' || target="${target}.img"
 fi
 
-[ -f "$target" ] && err "$target already exists, please remove it first"
-[ -d "$target" ] && berr "$target already exists, please remove it first"
+[ -f "$target" ] && rm $target || err "$target already exists, please remove it first"
+[ -d "$target" ] && err "$target already exists, please remove it first"
 
 command -v "unxz" > /dev/null 2>&1 || err "command unxz is not found"
 
@@ -125,6 +125,7 @@ else
     magic=$SATA_MAGIC
 fi
 
-echo -n "$magic" | dd of="$target" bs=$SECTOR_SIZE seek="$MAGIC_SECTOR" conv=fdatasync,notrunc
+echo -n "$magic" | dd of="$target" bs=$SECTOR_SIZE seek="$MAGIC_SECTOR" conv=fdatasync,notrunc &>/dev/null
+echo "Generated image: $(realpath ${target})"
 
 exit 0
