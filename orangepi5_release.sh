@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-shell_lines=132         # Adjust it if the script changes
+shell_lines=135         # Adjust it if the script changes
 version_string=r102-r1
 targetdir=orangepi5-openfyde
 TMPROOT=${TMPDIR:=./}
@@ -98,7 +98,10 @@ if [ -z "$target" ] && [ "$inplace" != "true" ] && [ -z "$src" ]; then
    echo "$target" | grep -q '.img' || target="${target}.img"
 fi
 
-[ -f "$target" ] && rm $target || err "$target already exists, please remove it first"
+if [ -f "$target" ]; then
+    rm $target || err "$target already exists, please remove it first"
+fi
+
 [ -d "$target" ] && err "$target already exists, please remove it first"
 
 command -v "unxz" > /dev/null 2>&1 || err "command unxz is not found"
