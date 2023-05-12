@@ -14,7 +14,7 @@ KEYWORDS="*"
 IUSE=""
 
 RDEPEND="
-    chromeos-base/orangepi5-firmware
+    chromeos-base/armbian-firmware
     sys-boot/orangepi5-loaders
     chromeos-base/os_install_service
 "
