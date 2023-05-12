@@ -7,6 +7,8 @@ main() {
  local type="$2"
  local loader=""
 
+ [ "$type" == "EMMC" ] && return 0
+
  if [ "$type" == "SATA" ]; then
     loader="${LOADER_DIR}/rkspi_loader_sata.img"
  else

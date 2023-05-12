@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 m2=""
 NVME_MAGIC='NVME'
@@ -13,7 +13,10 @@ m2="$(dd if="$rootdev" bs=1 skip=33586176 count=4 2>/dev/null)"
 
 mkdir /mnt/stateful_partition/fyde || true
 
-if [ "$m2" = "SATA" ]; then
-    echo overlays=rk3588-ssd-sata >> /mnt/stateful_partition/fyde/Env.txt
+if [ "$m2" == "SATA" ]; then
+    echo 'overlays=rk3588-ssd-sata' >> /mnt/stateful_partition/fyde/Env.txt
+    reboot
+elif [ "$m2" == "EMMC" ]; then
+    echo 'ftdfile=rk3588s-orangepi-5b.dtb' >> /mnt/stateful_partition/fyde/Env.txt
     reboot
 fi

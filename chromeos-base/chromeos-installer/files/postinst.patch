@@ -2,7 +2,7 @@ diff --git a/installer/chromeos-postinst b/installer/chromeos-postinst
 index 9fbae9c195b8..ea116a9b2f39 100755
 --- a/installer/chromeos-postinst
 +++ b/installer/chromeos-postinst
-@@ -29,6 +29,38 @@ cleanup() {
+@@ -29,6 +29,46 @@ cleanup() {
    done
  }
  
@@ -33,6 +33,14 @@ index 9fbae9c195b8..ea116a9b2f39 100755
 +
 +  if [ "$?" -eq "0" ]; then
 +    echo 'SATA'
++    return 0
++  fi
++
++  cat /mnt/stateful_partition/fyde/Env.txt \
++    | grep -o '^[^#]*' | grep 'ftdfile=' | grep -q 'rk3588s-orangepi-5b'
++
++  if [ "$?" -eq "0" ]; then
++    echo 'EMMC'
 +  else
 +    echo 'NVME'
 +  fi

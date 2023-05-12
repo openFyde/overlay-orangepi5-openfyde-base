@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-shell_lines=135         # Adjust it if the script changes
+shell_lines=140         # Adjust it if the script changes
 version_string=r102-r1
 targetdir=orangepi5-openfyde
 TMPROOT=${TMPDIR:=./}
@@ -8,6 +8,7 @@ target=""
 m2="nvme"
 NVME_MAGIC='NVME'
 SATA_MAGIC='SATA'
+EMMC_MAGIC='EMMC'
 SECTOR_SIZE=512
 # Write magic to the last sector of RESERVED partition of ChromiumOS
 MAGIC_SECTOR=65598
@@ -79,6 +80,9 @@ while [ "$1" ]; do
            elif [ "$2" == "sata" -o "$2" == "SATA" ]; then
                m2=sata
                shift;
+           elif [ "$2" == "emmc" -o "$2" == "EMMC" ]; then
+               m2=emmc
+               shift;
            else
                err "--boot requires an argument"
            fi
@@ -124,6 +128,8 @@ fi
 
 if [ "$m2" == "nvme" ]; then
     magic=$NVME_MAGIC
+elif [ "$m2" == "emmc" ]; then
+    magic=$EMMC_MAGIC
 else
     magic=$SATA_MAGIC
 fi
