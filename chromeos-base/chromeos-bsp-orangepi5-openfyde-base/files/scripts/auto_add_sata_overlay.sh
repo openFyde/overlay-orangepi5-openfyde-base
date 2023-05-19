@@ -17,6 +17,6 @@ if [ "$m2" == "SATA" ]; then
     echo 'overlays=rk3588-ssd-sata' >> /mnt/stateful_partition/fyde/Env.txt
     reboot
 elif [ "$m2" == "EMMC" ]; then
-    echo 'ftdfile=rk3588s-orangepi-5b.dtb' >> /mnt/stateful_partition/fyde/Env.txt
+    echo 'fdtfile=rk3588s-orangepi-5b.dtb' >> /mnt/stateful_partition/fyde/Env.txt
     reboot
 fi

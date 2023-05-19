@@ -17,6 +17,7 @@ RDEPEND="
     sys-kernel/armbian-firmware
     sys-boot/orangepi5-loaders
     chromeos-base/os_install_service
+    app-misc/brcm_patchram_plus
 "
 
 DEPEND="${RDEPEND}"
@@ -25,10 +26,8 @@ S="${WORKDIR}"
 
 src_install() {
     insinto "/etc/init"
-    doins ${FILESDIR}/powerd/never-suspend.conf
-    doins ${FILESDIR}/init/auto-change-sata-overlay.conf
-    doins ${FILESDIR}/init/enable-usb2-host-mode.conf
+    doins ${FILESDIR}/init/*conf
 
     exeinto "/usr/sbin"
-    doexe ${FILESDIR}/scripts/auto_add_sata_overlay.sh
+    doexe ${FILESDIR}/scripts/*.sh
 }

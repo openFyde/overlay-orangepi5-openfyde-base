@@ -3,7 +3,6 @@
 skip_blacklist_check=1
 skip_test_image_content=1
 
-fdtfile="rk3588s-orangepi-5.dtb"
 image_dir="${ROOT}/usr/share/orangepi5"
 install_bootloader() {
   local image="$1"
@@ -37,12 +36,9 @@ install_boot_scr() {
   info "Copying /boot/Image"
   sudo cp "${ROOT}/boot/Image" "${efi_dir}/boot/Image"
 
-  info "Copying /boot/rockchip/${fdtfile}"
-  [ -d "${efi_dir}/boot/rockchip" ] || sudo mkdir "${efi_dir}/boot/rockchip"
-  sudo cp "${ROOT}/boot/rockchip/${fdtfile}" "${efi_dir}/boot/rockchip/"
-
-  info "Copying /boot/rockchip/overlay"
-  sudo cp -r "${ROOT}/boot/rockchip/overlay" "${efi_dir}/boot/rockchip/"
+  info "Copying /boot/rockchip"
+  [ -d "${efi_dir}/boot/rockchip" ] && sudo rm -rf "${efi_dir}/boot/rockchip"
+  sudo cp -r "${ROOT}/boot/rockchip" "${efi_dir}/boot/"
 
   sudo umount "${efi_dir}"
   rmdir "${efi_dir}"
