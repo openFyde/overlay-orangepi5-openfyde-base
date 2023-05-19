@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-shell_lines=140         # Adjust it if the script changes
+shell_lines=141         # Adjust it if the script changes
 version_string=r102-r1
 targetdir=orangepi5-openfyde
 TMPROOT=${TMPDIR:=./}
@@ -33,10 +33,10 @@ usage()
     echo "      src image is plain, skip uncompression"
     echo "  '--inplace/-p"
     echo "      do not copy src to target, modify it inplace"
-    echo "  '--boot sata'"
-    echo "      generates images supporting boot from SATA"
-    echo "  '--boot nvme'"
-    echo "      generates images supporting boot from NVME"
+    echo "  '--boot sata/nvme'"
+    echo "      generates images supporting boot from SATA/NVME"
+    echo "  '--boot emmc'"
+    echo "      generates images for orange pi 5b (experimental)"
     exit 1;
 }
 
