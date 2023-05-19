@@ -59,6 +59,7 @@ setenv rootpart ${distro_bootpart}
 
 load ${devtype} ${devnum}:${rootpart} ${kernel_addr_r} ${prefix}Image
 
+echo "fdtfile: ${prefix}/rockchip/${fdtfile}"
 load ${devtype} ${devnum}:${rootpart} ${fdt_addr_r} ${prefix}/rockchip/${fdtfile}
 fdt addr ${fdt_addr_r}
 fdt resize 65536
