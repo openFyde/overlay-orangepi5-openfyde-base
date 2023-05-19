@@ -37,7 +37,7 @@ index 9fbae9c195b8..ea116a9b2f39 100755
 +  fi
 +
 +  cat /mnt/stateful_partition/fyde/Env.txt \
-+    | grep -o '^[^#]*' | grep 'ftdfile=' | grep -q 'rk3588s-orangepi-5b'
++    | grep -o '^[^#]*' | grep 'fdtfile=' | grep -q 'rk3588s-orangepi-5b'
 +
 +  if [ "$?" -eq "0" ]; then
 +    echo 'EMMC'
