@@ -10,6 +10,6 @@ cros_post_src_install_orangepi5_openfyde_base() {
 }
 
 cros_pre_src_prepare_orangepi5_openfyde_base_patches() {
-  epatch ${ORANGEPI5_OPENFYDE_BASE_BASHRC_FILESDIR}/install.patch
-  epatch ${ORANGEPI5_OPENFYDE_BASE_BASHRC_FILESDIR}/postinst.patch
+  eapply -p2 ${ORANGEPI5_OPENFYDE_BASE_BASHRC_FILESDIR}/install.patch
+  eapply -p2 ${ORANGEPI5_OPENFYDE_BASE_BASHRC_FILESDIR}/postinst.patch
 }
