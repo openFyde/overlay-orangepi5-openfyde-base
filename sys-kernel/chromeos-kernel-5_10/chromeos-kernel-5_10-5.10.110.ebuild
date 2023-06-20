@@ -3,7 +3,7 @@
 
 EAPI=7
 # CROS_WORKON_REPO is internal git url example: http://git.xxxx/repo
-CROS_WORKON_REPO="git@github.com:orangepi-xunlong"
+CROS_WORKON_REPO="https://github.com/orangepi-xunlong"
 # CROS_WORKON_COMMIT is internel kernel commit
 CROS_WORKON_COMMIT="7639c684a04b6f0ad068400da05d6c2ed2b7f18e"
 
