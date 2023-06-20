@@ -1,17 +1,36 @@
 #!/bin/bash
 #
 shell_lines=141         # Adjust it if the script changes
-version_string=r102-r1
+version_string=r108-r2
 targetdir=orangepi5-openfyde
 TMPROOT=${TMPDIR:=./}
 target=""
 m2="nvme"
+
 NVME_MAGIC='NVME'
 SATA_MAGIC='SATA'
 EMMC_MAGIC='EMMC'
+
+BOARD_MAGIC=""
+ORANGEPI5="orangepi5"
+ORANGEPI5B="orangepi5b"
+ORANGEPI5PLUS="orangepi5plus"
+
+declare -A BOARD_MAP=(
+    ["$ORANGEPI5"]="OP5 "
+    ["$ORANGEPI5B"]="OP5B"
+    ["$ORANGEPI5PLUS"]="OP5P"
+)
+
+board=""
+
 SECTOR_SIZE=512
 # Write magic to the last sector of RESERVED partition of ChromiumOS
 MAGIC_SECTOR=65598
+
+# board magic to the last 2 sector of RESERVED partition of ChromiumOS
+BOARD_MAGIC_SECTOR=65597
+
 self=$(realpath $0)
 skip="false"
 inplace="false"
@@ -35,8 +54,10 @@ usage()
     echo "      do not copy src to target, modify it inplace"
     echo "  '--boot sata/nvme'"
     echo "      generates images supporting boot from SATA/NVME"
-    echo "  '--boot emmc'"
-    echo "      generates images for orange pi 5b (experimental)"
+#    echo "  '--boot emmc'"
+#    echo "      generates images for orange pi 5b (experimental)"
+    echo "  '--board orangepi5/orangepi5b/orangepi5plus'"
+    echo "      generates images for orange pi 5/5b/5plus (experimental)"
     exit 1;
 }
 
@@ -73,15 +94,27 @@ while [ "$1" ]; do
        "--inplace"|"-p")
            inplace="true"
            ;;
+       "--board")
+           [ -z "$2" ] && usage
+
+           _board="$(echo "$2" | tr '[:upper:]' '[:lower:]')"
+
+           for b in "${!LINK_MAP[@]}"; do
+              if [ "$b" == "$_board" ]; then
+                  board="$b"
+                  shift
+                  break
+              fi
+           done
+
+           [ -z "$board" ] && err "unsupported board: $board"
+           ;;
        "--boot")
            if [ "$2" == "nvme" -o "$2" == "NVME" ]; then
                m2=nvme
                shift;
            elif [ "$2" == "sata" -o "$2" == "SATA" ]; then
                m2=sata
-               shift;
-           elif [ "$2" == "emmc" -o "$2" == "EMMC" ]; then
-               m2=emmc
                shift;
            else
                err "--boot requires an argument"
@@ -94,6 +127,7 @@ while [ "$1" ]; do
     shift
 done
 
+[ "$board" == "ORANGEPI5B" ] && m2="emmc"
 
 cwd="$(pwd)"
 
@@ -134,7 +168,11 @@ else
     magic=$SATA_MAGIC
 fi
 
+board_magic="${LINK_MAP[$board]}"
+[ -z "$board_magic" ] && err "empty board_magic for board $board"
+
 echo -n "$magic" | dd of="$target" bs=$SECTOR_SIZE seek="$MAGIC_SECTOR" conv=fdatasync,notrunc &>/dev/null
+echo -n "$board_magic" | dd of="$target" bs=$SECTOR_SIZE seek="$BOARD_MAGIC_SECTOR" conv=fdatasync,notrunc &>/dev/null
 echo "Generated image: $(realpath ${target})"
 
 exit 0
