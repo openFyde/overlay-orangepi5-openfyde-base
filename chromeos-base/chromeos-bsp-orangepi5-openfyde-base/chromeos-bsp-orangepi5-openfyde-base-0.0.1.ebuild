@@ -31,6 +31,6 @@ src_install() {
     exeinto "/usr/sbin"
     doexe ${FILESDIR}/scripts/*.sh
 
-    exeinto "/usr/share/orangepi5"
+    exeinto "/usr/share/orange"
     doexe ${FILESDIR}/scripts/common.sh
 }

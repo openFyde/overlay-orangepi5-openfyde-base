@@ -18,8 +18,8 @@ declare -A dtb_rmap=(
 
 dtb="$(cat "$ENV_FILE" | grep fdtfile | sed 's/fdtfile=//g')"
 
-if [ -z "${dtb_map[$dtb]}" ]; then
+if [ -z "${dtb_rmap[$dtb]}" ]; then
     BOARD=$DEFAULT_BOARD
 else
-    BOARD=${dtb_map[$dtb]}
+    BOARD=${dtb_rmap[$dtb]}
 fi

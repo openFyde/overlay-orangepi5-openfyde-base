@@ -1,6 +1,8 @@
 #!/bin/bash
 
-LOADER_DIR=/usr/share/orangepi5
+source /usr/share/orange/common.sh
+
+LOADER_DIR="/usr/share/${BOARD}"
 
 main() {
  local target="$1"
@@ -8,6 +10,8 @@ main() {
  local loader=""
 
  [ "$type" == "EMMC" ] && return 0
+
+ [ ! -d "$LOADER_DIR" ] && echo "failed to find $LOADER_DIR" && return 1
 
  if [ "$type" == "SATA" ]; then
     loader="${LOADER_DIR}/rkspi_loader_sata.img"

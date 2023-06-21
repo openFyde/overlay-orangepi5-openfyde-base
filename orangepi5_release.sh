@@ -1,11 +1,12 @@
 #!/bin/bash
 #
-shell_lines=141         # Adjust it if the script changes
-version_string=r108-r2
+shell_lines=204         # Adjust it if the script changes
+version_string=r114
 targetdir=orangepi5-openfyde
 TMPROOT=${TMPDIR:=./}
 target=""
 m2="nvme"
+TMP="$(mktemp -d ${TMPROOT}/XXXXXX)"
 
 NVME_MAGIC='NVME'
 SATA_MAGIC='SATA'
@@ -35,6 +36,11 @@ self=$(realpath $0)
 skip="false"
 inplace="false"
 src=""
+
+cleanup()
+{
+    [ -d "$TMP" ] && rm -f $TMP
+}
 
 usage()
 {
@@ -99,7 +105,7 @@ while [ "$1" ]; do
 
            _board="$(echo "$2" | tr '[:upper:]' '[:lower:]')"
 
-           for b in "${!LINK_MAP[@]}"; do
+           for b in "${!BOARD_MAP[@]}"; do
               if [ "$b" == "$_board" ]; then
                   board="$b"
                   shift
@@ -107,7 +113,7 @@ while [ "$1" ]; do
               fi
            done
 
-           [ -z "$board" ] && err "unsupported board: $board"
+           [ -z "$board" ] && err "unsupported board: $_board"
            ;;
        "--boot")
            if [ "$2" == "nvme" -o "$2" == "NVME" ]; then
@@ -142,14 +148,14 @@ fi
 
 [ -d "$target" ] && err "$target already exists, please remove it first"
 
-command -v "unxz" > /dev/null 2>&1 || err "command unxz is not found"
+command -v "tar" > /dev/null 2>&1 || err "command tar is not found"
 
 if [ "$skip" == "false" ]; then
-    cat $self | tail -n +${shell_lines} | unxz > $target
+    cat $self | tail -n +${shell_lines} | tar vxJf - -C $TMP
 
     if [ "$?" -ne 0 ]; then
         rm "$target"
-        err "failed to unxz image"
+        err "failed to uncompress image"
     fi
 else
     if [ "$inplace" == "false" ]; then
@@ -158,6 +164,8 @@ else
         target="$src"
     fi
 fi
+
+[ "$inplace" == "false" ] && mv "$(find $TMP -maxdepth 1 -name "*img")" $target || err "failed to cp $src $target"
 
 
 if [ "$m2" == "nvme" ]; then
@@ -168,11 +176,28 @@ else
     magic=$SATA_MAGIC
 fi
 
-board_magic="${LINK_MAP[$board]}"
+board_magic="${BOARD_MAP[$board]}"
 [ -z "$board_magic" ] && err "empty board_magic for board $board"
+
+echo "board: $board storage: $magic"
 
 echo -n "$magic" | dd of="$target" bs=$SECTOR_SIZE seek="$MAGIC_SECTOR" conv=fdatasync,notrunc &>/dev/null
 echo -n "$board_magic" | dd of="$target" bs=$SECTOR_SIZE seek="$BOARD_MAGIC_SECTOR" conv=fdatasync,notrunc &>/dev/null
 echo "Generated image: $(realpath ${target})"
+
+image_dir="${TMP}/${board}"
+image="$target"
+
+echo "Installing uboot firmware on ${image}"
+dd if="${image_dir}/idbloader.img" of="$image" \
+    conv=notrunc,fsync \
+    seek=64 || die "fail to install idbloader" || err "failed to write idbloader"
+
+dd if="${image_dir}/u-boot.itb" of="$image" \
+    conv=notrunc,fsync \
+    seek=16384 || die "fail to install u-boot" || err "failed to write uboot"
+echo "Installed bootloader to ${image}."
+
+cleanup
 
 exit 0

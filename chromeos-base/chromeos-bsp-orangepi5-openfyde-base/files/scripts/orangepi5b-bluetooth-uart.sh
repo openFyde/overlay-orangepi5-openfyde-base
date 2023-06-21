@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /usr/share/orangepi5/common.sh
+source /usr/share/orange/common.sh
 
 case ${BOARD} in
         orangepi5|orangepi5b|orangepi5plus|orangepitab|orangepi900)

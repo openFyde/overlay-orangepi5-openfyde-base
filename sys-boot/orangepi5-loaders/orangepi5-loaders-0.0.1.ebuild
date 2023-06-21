@@ -20,6 +20,6 @@ DEPEND="${RDEPEND}"
 S="${WORKDIR}"
 
 src_install() {
-    insinto "/usr/share/orangepi5"
-    doins ${FILESDIR}/*
+    insinto "/usr/share/"
+    doins -r ${FILESDIR}/*
 }

@@ -1,6 +1,8 @@
 #!/bin/bash
 #
 
+base_dir=$(dirname $(realpath $0))
+loaders_dir="$base_dir""/sys-boot/orangepi5-loaders/files"
 script="orangepi5_release.sh"
 
 usage()
@@ -28,10 +30,10 @@ target=$2
 [ -f $target ] && rm $target
 
 echo "compressing image"
-xz -fk "$src"
+tar cfJv "${src}.tar.xz" $src -C $loaders_dir .
 
 cat "$script" > "$target"
-cat ${src}.xz >> "$target"
+cat ${src}.tar.xz >> "$target"
 
 chmod +x "$target"
 echo "Generated $target"
