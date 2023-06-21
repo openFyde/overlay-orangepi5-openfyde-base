@@ -30,7 +30,7 @@ target=$2
 [ -f $target ] && rm $target
 
 echo "compressing image"
-tar cfJv "${src}.tar.xz" $src -C $loaders_dir .
+tar cfJ "${src}.tar.xz" $src -C $loaders_dir .
 
 cat "$script" > "$target"
 cat ${src}.tar.xz >> "$target"

@@ -39,7 +39,7 @@ src=""
 
 cleanup()
 {
-    [ -d "$TMP" ] && rm -f $TMP
+    [ -d "$TMP" ] && rm -rf $TMP
 }
 
 usage()
@@ -151,7 +151,7 @@ fi
 command -v "tar" > /dev/null 2>&1 || err "command tar is not found"
 
 if [ "$skip" == "false" ]; then
-    cat $self | tail -n +${shell_lines} | tar vxJf - -C $TMP
+    cat $self | tail -n +${shell_lines} | tar xJf - -C $TMP
 
     if [ "$?" -ne 0 ]; then
         rm "$target"
