@@ -1,10 +1,16 @@
 # Recompile with:
 # mkimage -C none -A arm -T script -d /boot/boot.cmd /boot/boot.scr
 
+# official orange pi 5 plus u-boot is not compiled with CONFIG_CMD_SCSI
+if scsi info; then
+  echo "It seems to be Orange Pi 5/5b."
+  setenv fdtfile rk3588s-orangepi-5.dtb
+else
+  echo "It seems to be Orange Pi 5 Plus."
+  setenv fdtfile rk3588-orangepi-5-plus.dtb
+fi
 
-setenv fdtfile #ROCKCHIP_DTS#.dtb
 setenv rootpart 3
-
 setenv load_addr "0x9000000"
 setenv overlay_error "false"
 
