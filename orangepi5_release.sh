@@ -165,7 +165,7 @@ else
     fi
 fi
 
-[ "$inplace" == "false" ] && mv "$(find $TMP -maxdepth 1 -name "*img")" $target || err "failed to cp $src $target"
+[ "$inplace" == "false" ] && mv "$(find $TMP -maxdepth 1 -name "*.img" -or -name "*.bin" )" $target || err "failed to cp $src $target"
 
 
 if [ "$m2" == "nvme" ]; then
