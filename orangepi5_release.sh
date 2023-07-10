@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-shell_lines=296         # Adjust it if the script changes
+shell_lines=295         # Adjust it if the script changes
 version_string=r114
 targetdir=orangepi5-openfyde
 TMPROOT=${TMPDIR:=./}
@@ -192,8 +192,7 @@ enter_menu()
        echo "*****************************"
        echo "[1] M.2 NVME"
        echo "[2] M.2 SATA"
-       echo "[3] M.2 EMMC"
-       echo "[4] Quit."
+       echo "[3] Quit."
        echo "-----------------------------"
        echo "Enter your choice:"
 
