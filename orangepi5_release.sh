@@ -58,8 +58,8 @@ usage()
     echo "      src image is plain, skip uncompression"
     echo "  '--inplace/-p"
     echo "      do not copy src to target, modify it inplace"
-    echo "  '--boot sata/nvme'"
-    echo "      generates images supporting boot from SATA/NVME"
+    echo "  '--boot sata/nvme/emmc'"
+    echo "      generates images supporting boot from SATA/NVME/EMMC"
 #    echo "  '--boot emmc'"
 #    echo "      generates images for orange pi 5b (experimental)"
     echo "  '--board orangepi5/orangepi5b/orangepi5plus'"
@@ -191,12 +191,13 @@ image="$target"
 echo "Installing uboot firmware on ${image}"
 dd if="${image_dir}/idbloader.img" of="$image" \
     conv=notrunc,fsync \
-    seek=64 || die "fail to install idbloader" || err "failed to write idbloader"
+    seek=64 2&>1 >/dev/null || err "fail to install idbloader"
 
 dd if="${image_dir}/u-boot.itb" of="$image" \
     conv=notrunc,fsync \
-    seek=16384 || die "fail to install u-boot" || err "failed to write uboot"
-echo "Installed bootloader to ${image}."
+    seek=16384 2&>1 >/dev/null || err "fail to install u-boot"
+
+echo "Installed bootloader to ${image}"
 
 cleanup
 
