@@ -281,11 +281,11 @@ image="$target"
 echo "Installing uboot firmware on ${image}"
 dd if="${image_dir}/idbloader.img" of="$image" \
     conv=notrunc,fsync \
-    seek=64 2&>1 >/dev/null || err "fail to install idbloader"
+    seek=64 &>/dev/null || err "fail to install idbloader"
 
 dd if="${image_dir}/u-boot.itb" of="$image" \
     conv=notrunc,fsync \
-    seek=16384 2&>1 >/dev/null || err "fail to install u-boot"
+    seek=16384 &>/dev/null || err "fail to install u-boot"
 
 echo "Installed bootloader to ${image}"
 
