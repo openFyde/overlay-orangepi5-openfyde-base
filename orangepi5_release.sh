@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-shell_lines=204         # Adjust it if the script changes
+shell_lines=296         # Adjust it if the script changes
 version_string=r114
 targetdir=orangepi5-openfyde
 TMPROOT=${TMPDIR:=./}
 target=""
-m2="nvme"
+m2=""
 TMP="$(mktemp -d ${TMPROOT}/XXXXXX)"
 
 NVME_MAGIC='NVME'
@@ -60,8 +60,6 @@ usage()
     echo "      do not copy src to target, modify it inplace"
     echo "  '--boot sata/nvme/emmc'"
     echo "      generates images supporting boot from SATA/NVME/EMMC"
-#    echo "  '--boot emmc'"
-#    echo "      generates images for orange pi 5b (experimental)"
     echo "  '--board orangepi5/orangepi5b/orangepi5plus'"
     echo "      generates images for orange pi 5/5b/5plus (experimental)"
     exit 1;
@@ -73,67 +71,160 @@ err()
     exit 1
 }
 
-while [ "$1" ]; do
-   case "$1" in
-       "--help"|"-h")
-           usage;
-           ;;
-       "--src"|"-i")
-           if [ "$2" ]; then
-               src="$2"
-               shift;
-           else
-               err "ERROR: --src: no src specified."
-           fi
-           ;;
-       "--target"|"-o")
-           if [ "$2" ]; then
-               target="$2"
-               shift;
-           else
-               err "ERROR: --target: no target specified."
-           fi
-           ;;
-       "--skip"|"-s")
-           skip="true"
-           ;;
-       "--inplace"|"-p")
-           inplace="true"
-           ;;
-       "--board")
-           [ -z "$2" ] && usage
+read_cmd_line() {
+    while [ "$1" ]; do
+       case "$1" in
+           "--help"|"-h")
+               usage;
+               ;;
+           "--src"|"-i")
+               if [ "$2" ]; then
+                   src="$2"
+                   shift;
+               else
+                   err "ERROR: --src: no src specified."
+               fi
+               ;;
+           "--target"|"-o")
+               if [ "$2" ]; then
+                   target="$2"
+                   shift;
+               else
+                   err "ERROR: --target: no target specified."
+               fi
+               ;;
+           "--skip"|"-s")
+               skip="true"
+               ;;
+           "--inplace"|"-p")
+               inplace="true"
+               ;;
+           "--board")
+               [ -z "$2" ] && usage
 
-           _board="$(echo "$2" | tr '[:upper:]' '[:lower:]')"
+               _board="$(echo "$2" | tr '[:upper:]' '[:lower:]')"
 
-           for b in "${!BOARD_MAP[@]}"; do
-              if [ "$b" == "$_board" ]; then
-                  board="$b"
-                  shift
-                  break
-              fi
-           done
+               for b in "${!BOARD_MAP[@]}"; do
+                  if [ "$b" == "$_board" ]; then
+                      board="$b"
+                      shift
+                      break
+                  fi
+               done
 
-           [ -z "$board" ] && err "unsupported board: $_board"
-           ;;
-       "--boot")
-           if [ "$2" == "nvme" -o "$2" == "NVME" ]; then
-               m2=nvme
-               shift;
-           elif [ "$2" == "sata" -o "$2" == "SATA" ]; then
-               m2=sata
-               shift;
-           else
-               err "--boot requires an argument"
-           fi
-           ;;
-       *)
-           usage
-           ;;
-    esac
-    shift
-done
+               [ -z "$board" ] && err "unsupported board: $_board"
+               ;;
+           "--boot")
+               if [ "$2" == "nvme" -o "$2" == "NVME" ]; then
+                   m2=nvme
+                   shift;
+               elif [ "$2" == "sata" -o "$2" == "SATA" ]; then
+                   m2=sata
+                   shift;
+               else
+                   err "--boot requires an argument"
+               fi
+               ;;
+           *)
+               usage
+               ;;
+       esac
+       shift
+    done
+}
 
-[ "$board" == "ORANGEPI5B" ] && m2="emmc"
+enter_menu()
+{
+    while :
+    do
+       clear
+       echo "*****************************"
+       echo "* Supported boards *"
+       echo "*****************************"
+       echo "[1] orange pi 5"
+       echo "[2] orange pi 5b"
+       echo "[3] orange pi 5 plus"
+       echo "[4] Quit."
+       echo "-----------------------------"
+       echo "Enter your choice:"
+
+       read your_choice
+       case $your_choice in
+           1) board=$ORANGEPI5; break ;;
+           2) board=$ORANGEPI5B; break ;;
+           3) board=$ORANGEPI5PLUS; break ;;
+           4) exit 0;;
+           *) err "Invalid choice, please choose between 1-4"; sleep 2 ;;
+       esac
+    done
+
+    [ "$board" == "ORANGEPI5B" ] && return 0
+
+    if [ "$board" == "$ORANGEPI5" ]; then
+    while :
+    do
+       clear
+       echo "*****************************"
+       echo "* Supported boot storage *"
+       echo "*****************************"
+       echo "[1] M.2 NVME"
+       echo "[2] M.2 SATA"
+       echo "[3] Quit."
+       echo "-----------------------------"
+       echo "Enter your choice:"
+
+       read your_choice
+       case $your_choice in
+           1) m2=nvme; break ;;
+           2) m2=sata; break ;;
+           3) exit 0;;
+           *) err "Invalid choice, please choose between 1-3"; sleep 2 ;;
+       esac
+    done
+    fi
+
+    if [ "$board" == "$ORANGEPI5PLUS" ]; then
+    while :
+    do
+       clear
+       echo "*****************************"
+       echo "* Supported boot storage *"
+       echo "*****************************"
+       echo "[1] M.2 NVME"
+       echo "[2] M.2 SATA"
+       echo "[3] M.2 EMMC"
+       echo "[4] Quit."
+       echo "-----------------------------"
+       echo "Enter your choice:"
+
+       read your_choice
+       case $your_choice in
+           1) m2=nvme; break ;;
+           2) m2=emmc; break ;;
+           3) exit 0;;
+           *) err "Invalid choice, please choose between 1-3"; sleep 2 ;;
+       esac
+    done
+    fi
+}
+
+num_arg=$#
+
+if [ "$num_arg" -eq 0 ]; then
+    enter_menu
+else
+    read_cmd_line "$@"
+fi
+
+[ "$board" == "$ORANGEPI5B" ] && m2="emmc"
+
+[ -z "$board" ] && err "option '--board orangepi5/orangepi5b/orangepi5plus' is required"
+
+[ -z "$m2" ] && err "option '--boot sata/nvme/emmc' is required"
+
+echo "*****************************"
+echo "* board: $board, supported install storage: $m2 *"
+echo "*****************************"
 
 cwd="$(pwd)"
 
