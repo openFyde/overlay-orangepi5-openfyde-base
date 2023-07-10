@@ -144,7 +144,7 @@ enter_menu()
        echo "[1] orange pi 5"
        echo "[2] orange pi 5b"
        echo "[3] orange pi 5 plus"
-       echo "[4] Quit."
+       echo "[4] Quit"
        echo "-----------------------------"
        echo "Enter your choice:"
 
@@ -169,7 +169,7 @@ enter_menu()
        echo "*****************************"
        echo "[1] M.2 NVME"
        echo "[2] M.2 SATA"
-       echo "[3] Quit."
+       echo "[3] Quit"
        echo "-----------------------------"
        echo "Enter your choice:"
 
@@ -191,8 +191,8 @@ enter_menu()
        echo "* Supported boot storage *"
        echo "*****************************"
        echo "[1] M.2 NVME"
-       echo "[2] M.2 SATA"
-       echo "[3] Quit."
+       echo "[2] EMMC"
+       echo "[3] Quit"
        echo "-----------------------------"
        echo "Enter your choice:"
 
